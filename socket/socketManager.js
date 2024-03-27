@@ -1,5 +1,6 @@
 const { Server } = require("socket.io");
-const db = require("../database")
+const db = require("../database");
+const { v4: uuidv4 } = require('uuid')
 
 const user2Selection = (data) => {
   if (data === 'white') {
@@ -103,6 +104,22 @@ function initializeSocket(server) {
     socket.on("game-request-cancelled", (data) => {
       socket.to(data.rid).emit("game-cancelled", { gameId: data.room });
       io.of('/').in(data.room).socketsLeave(data.room);
+    })
+
+    socket.on("random-play", () => {
+      socket.join('random');
+      const clients = io.sockets.adapter.rooms.get('random');
+      const socketIds = Array.from(clients.keys());
+      if (socketIds.length > 1) {
+        const player1 = socketIds[0];
+        const player2 = socketIds[1];
+        socketIds.shift();
+        socketIds.shift();
+        io.of('/').in('random').socketsLeave('random');
+        const uniqueId = uuidv4();
+        io.to(player1).emit("random-game-id", { gameId: uniqueId });
+        io.to(player2).emit("random-game-id", { gameId: uniqueId });
+      }
     })
 
   });
