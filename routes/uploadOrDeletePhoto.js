@@ -42,7 +42,7 @@ router.post("/upload-or-delete-photo", upload.single("profileImage"), async (req
             // Grab the public URL
             const downloadURL = await getDownloadURL(snapshot.ref);
             const result = await db.query("update users set profile_photo=$1 where id=$2 returning *", [downloadURL, req.user.id]);
-            await db.query("update users set profile_photo=$1 where username=$2 ", [downloadURL, req.user.username]);
+            await db.query("update feedback set profile_photo=$1 where username=$2 ", [downloadURL, req.user.username]);
             const user = result.rows[0];
             req.login(user, (err) => {
                 if (err) res.json({ success: false, error: err.message });

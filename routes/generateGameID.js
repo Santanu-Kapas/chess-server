@@ -2,15 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { v4: uuidv4 } = require('uuid')
 require('dotenv').config();
-const jwt = require('jsonwebtoken')
-
-// Function to encrypt data
-function encryptData(data) {
-    const token = jwt.sign({
-        data
-    }, process.env.JWT_SECRET);
-    return token;
-}
+const encryptData = require('../utils/encryptData')
 
 router.get("/generate-game-id", (req, res) => {
     try {

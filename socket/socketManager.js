@@ -1,6 +1,6 @@
 const { Server } = require("socket.io");
 const db = require("../database");
-const { v4: uuidv4 } = require('uuid')
+const { v4: uuidv4 } = require('uuid');
 
 const user2Selection = (data) => {
   if (data === 'white') {
@@ -13,6 +13,8 @@ const user2Selection = (data) => {
 const playWithFriendSelection = new Map();
 
 const playWithFriendBoardPosition = new Map();
+
+const opponentDetails = new Map();
 
 function initializeSocket(server) {
   const io = new Server(server, {
@@ -57,10 +59,44 @@ function initializeSocket(server) {
       if (data.userSelection) {
         playWithFriendSelection.set(data.room, data.userSelection);
       }
+      if (data.userDetails) {
+        let userDetails = { [socket.id]: data.userDetails };
+        if (opponentDetails.has(data.room)) {
+          let existingDetails = opponentDetails.get(data.room);
+          Object.assign(existingDetails, userDetails);
+          opponentDetails.set(data.room, existingDetails);
+        } else {
+          opponentDetails.set(data.room, userDetails);
+        }
+      }
       const clients = io.sockets.adapter.rooms.get(gameRoom);
       const socketIds = Array.from(clients.keys());
+      let player1, player2;
       if (roomSize == 2) {
-        socket.to(socketIds[0]).emit("redirect", { data: "Both User Joined" });
+        if (opponentDetails.has(data.room)) {
+          let roomDetails = opponentDetails.get(data.room);
+          if (roomDetails.hasOwnProperty(socketIds[0])) {
+            player1 = roomDetails[socketIds[0]];
+          }
+          if (roomDetails.hasOwnProperty(socketIds[1])) {
+            player2 = roomDetails[socketIds[1]];
+          }
+        }
+        if (player1 && player1.id && player2 && player2.id) {
+          if (player1.id !== player2.id) {
+            io.to(socketIds[0]).emit("redirect", { gameId: gameRoom, opponentDetails: player2 });
+          }
+          io.to(socketIds[1]).emit("both-joined", { gameId: gameRoom, opponentDetails: player1 });
+        } else if (player1 && player1.id) {
+          io.to(socketIds[0]).emit("redirect", { gameId: gameRoom, opponentDetails: null });
+          io.to(socketIds[1]).emit("both-joined", { gameId: gameRoom, opponentDetails: player1 })
+        } else if (player2 && player2.id) {
+          io.to(socketIds[0]).emit("redirect", { gameId: gameRoom, opponentDetails: player2 });
+          io.to(socketIds[1]).emit("both-joined", { gameId: gameRoom, opponentDetails: null })
+        } else {
+          io.to(socketIds[0]).emit("redirect", { gameId: gameRoom, opponentDetails: null });
+          io.to(socketIds[1]).emit("both-joined", { gameId: gameRoom, opponentDetails: null });
+        }
       }
       socket.to(socketIds[0]).emit("board-orientation", { orientation: playWithFriendSelection.get(data.room) });
       io.to(socketIds[1]).emit("board-orientation", { orientation: user2Selection(playWithFriendSelection.get(data.room)) });
@@ -106,6 +142,10 @@ function initializeSocket(server) {
       io.of('/').in(data.room).socketsLeave(data.room);
     })
 
+    socket.on("game-between-same-user", (data) => {
+      socket.leave(data.gameId)
+    })
+
     socket.on("random-play", () => {
       socket.join('random');
       const clients = io.sockets.adapter.rooms.get('random');
@@ -117,9 +157,13 @@ function initializeSocket(server) {
         socketIds.shift();
         io.of('/').in('random').socketsLeave('random');
         const uniqueId = uuidv4();
-        io.to(player1).emit("random-game-id", { gameId: uniqueId });
+        io.to(player1).emit("random-game-id", { gameId: uniqueId, userSelection: 'white' });
         io.to(player2).emit("random-game-id", { gameId: uniqueId });
       }
+    })
+
+    socket.on("cancel-random-play-request", () => {
+      socket.leave('random');
     })
 
   });
