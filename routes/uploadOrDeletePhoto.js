@@ -66,7 +66,7 @@ router.post("/upload-or-delete-photo", upload.single("profileImage"), async (req
     }
 });
 
-router.delete("/upload-or-delete-photo", async (res, req) => {
+router.delete("/upload-or-delete-photo", async (req, res) => {
     if (req.isAuthenticated()) {
         try {
             if (req.user.profile_photo != null) {
@@ -80,13 +80,13 @@ router.delete("/upload-or-delete-photo", async (res, req) => {
                     if (err) res.json({ success: false, error: err.message });
                     else {
                         return res.json({
-                            success: true, error: "nothing"
+                            success: true, message: 'Profile Photo Deleted Sucessfully'
                         });
                     }
                 });
             }
             else {
-                return res.json({ success: true, error: "nothing" });
+                return res.json({ success: false, error: "You don't have a profile photo!" });
             }
         }
         catch (error) {

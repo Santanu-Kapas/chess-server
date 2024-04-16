@@ -12,8 +12,6 @@ const user2Selection = (data) => {
 
 const playWithFriendSelection = new Map();
 
-const playWithFriendBoardPosition = new Map();
-
 const opponentDetails = new Map();
 
 function initializeSocket(server) {
@@ -98,13 +96,44 @@ function initializeSocket(server) {
           io.to(socketIds[1]).emit("both-joined", { gameId: gameRoom, opponentDetails: null });
         }
       }
-      socket.to(socketIds[0]).emit("board-orientation", { orientation: playWithFriendSelection.get(data.room) });
+      io.to(socketIds[0]).emit("board-orientation", { orientation: playWithFriendSelection.get(data.room) });
       io.to(socketIds[1]).emit("board-orientation", { orientation: user2Selection(playWithFriendSelection.get(data.room)) });
     });
 
+    socket.on("cancel-game", (data) => {
+      socket.to(data.room).emit("game-cancelled", { message: `${data.sender} Cancelled The Game` });
+      io.of('/').in(data.room).socketsLeave(data.room);
+      playWithFriendSelection.delete(data.room);
+    })
+
+    socket.on("resigned", (data) => {
+      socket.to(data.room).emit("opponent-resigned", { gameId: data.room, message: `${data.sender} Resigned` });
+      io.of('/').in(data.room).socketsLeave(data.room);
+      playWithFriendSelection.delete(data.room);
+    })
+
+    socket.on("time-out", (data) => {
+      socket.to(data.room).emit("opponent-time-out", { gameId: data.room, message: `${data.sender}'s Time Out` });
+      io.of('/').in(data.room).socketsLeave(data.room);
+      playWithFriendSelection.delete(data.room);
+    })
+
+    socket.on("draw-request-send", (data) => {
+      socket.to(data.room).emit("draw-request-received", { sender: data.sender, room: data.room });
+    })
+
+    socket.on("draw-request-accepted", (data) => {
+      io.to(data.room).emit("game-drawn", { gameId: data.room });
+      io.of('/').in(data.room).socketsLeave(data.room);
+      playWithFriendSelection.delete(data.room);
+    })
+
+    socket.on("draw-request-rejected", (data) => {
+      socket.to(data.room).emit("draw-rejected", { gameId: data.room })
+    })
+
     socket.on("move", (data) => {
-      io.to(data.room).emit("board", { game: data.game, position: data.position, turn: data.turn });
-      playWithFriendBoardPosition.set(data.room, data.position)
+      io.to(data.room).emit("board", { game: data.game, position: data.position, turn: data.turn, move: data.move });
     });
 
     socket.on("search-user", async (data) => {
@@ -150,11 +179,9 @@ function initializeSocket(server) {
       socket.join('random');
       const clients = io.sockets.adapter.rooms.get('random');
       const socketIds = Array.from(clients.keys());
-      if (socketIds.length > 1) {
+      if (socketIds.length == 2) {
         const player1 = socketIds[0];
         const player2 = socketIds[1];
-        socketIds.shift();
-        socketIds.shift();
         io.of('/').in('random').socketsLeave('random');
         const uniqueId = uuidv4();
         io.to(player1).emit("random-game-id", { gameId: uniqueId, userSelection: 'white' });

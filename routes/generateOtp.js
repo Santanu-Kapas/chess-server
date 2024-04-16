@@ -22,23 +22,23 @@ router.post("/generate-otp", async (req, res) => {
     const { email, username } = req.body;
     try {
         const checkResult = await db.query("SELECT * FROM users WHERE username=$1 or email = $2", [
-            username,email
+            username, email
         ]);
-        if (checkResult.rows.length>0){
-        if (checkResult.rows.length == 1) {
-            if(checkResult.rows[0].email==email && checkResult.rows[0].username==username )
-            res.json({ error: "This User already exists, try with Login instead!", success: false });
-            else if (checkResult.rows[0].email==email){
-                res.json({ error: "This email is already taken, try with another email instead!", success: false });
+        if (checkResult.rows.length > 0) {
+            if (checkResult.rows.length == 1) {
+                if (checkResult.rows[0].email == email && checkResult.rows[0].username == username)
+                    res.json({ error: "This User already exists, try with Login instead!", success: false });
+                else if (checkResult.rows[0].email == email) {
+                    res.json({ error: "This email is already taken, try with another email instead!", success: false });
+                }
+                else {
+                    res.json({ error: "This username is already taken, try with another username instead!", success: false });
+                }
             }
-            else{
-                res.json({ error: "This username is already taken, try with another username instead!", success: false });
+            else if (checkResult.rows.length > 1) {
+                res.json({ error: "This User already exists, try with Login instead!", success: false });
             }
-        } 
-        else if (checkResult.rows.length > 1){
-            res.json({ error: "This User already exists, try with Login instead!", success: false });     
         }
-    }
         else {
             const otp = generateOtp();
             const mailHtml = otpMail(otp, username)

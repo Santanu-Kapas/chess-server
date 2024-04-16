@@ -20,7 +20,7 @@ router.post("/register", async (req, res) => {
     const retrievedUsername = data.slice(secretLen);
 
     if (retrievedUsername !== username) {
-      return res.json({ success: false, error: "You are not authorized" });
+      return res.json({ success: false, error: "You're not authorised" });
     }
 
     const checkResult = await db.query("SELECT * FROM users WHERE email = $1", [

@@ -18,10 +18,10 @@ router.post("/login",
 );
 
 passport.use(
-  new Strategy(async function verify(username, password, cb) {
+  new Strategy(async function verify(email, password, cb) {
     try {
-      const result = await db.query("SELECT * FROM users WHERE username = $1 ", [
-        username,
+      const result = await db.query("SELECT * FROM users WHERE email = $1 ", [
+        email,
       ]);
       if (result.rows.length > 0) {
         const user = result.rows[0];

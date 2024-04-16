@@ -43,6 +43,7 @@ const io = initializeSocket(server);
 app.use("/api", require("./routes/login.js"));
 app.use("/api", require("./routes/register.js"));
 app.use("/api", require("./routes/generateOtp.js"));
+app.use("/api", require("./routes/resetPassword.js"));
 app.use("/api", require("./routes/logout.js"));
 app.use("/api", require("./routes/credentials.js"));
 app.use("/api", require("./routes/uploadOrDeletePhoto.js"));
@@ -58,6 +59,9 @@ app.use("/api", require("./routes/friendData.js"));
 app.use("/api", require("./routes/commentStatus.js"));
 app.use("/api", require("./routes/commentSubmit.js"));
 app.use("/api", require("./routes/commentFeed.js"));
+app.use("/api", require("./routes/gameHistorySave.js"));
+app.use("/api", require("./routes/gameHistoryFeed.js"));
+app.use("/api", require("./routes/forgotPassword.js"));
 
 server.listen(port, () => {
   console.log(`App listening on port ${port}`);
