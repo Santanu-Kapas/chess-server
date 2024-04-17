@@ -62,6 +62,7 @@ app.use("/api", require("./routes/commentFeed.js"));
 app.use("/api", require("./routes/gameHistorySave.js"));
 app.use("/api", require("./routes/gameHistoryFeed.js"));
 app.use("/api", require("./routes/forgotPassword.js"));
+app.use("/api", require("./routes/test.js"));
 
 server.listen(port, () => {
   console.log(`App listening on port ${port}`);

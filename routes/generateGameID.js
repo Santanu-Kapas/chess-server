@@ -13,7 +13,7 @@ router.get("/generate-game-id", (req, res) => {
         const id = `${uniqueId}?expiry=${gameId}`;
         res.json({ success: true, id, uniqueId });
     } catch (error) {
-        res.json({ success: false, error })
+        res.json({ success: false, error: error.message })
     }
 });
 

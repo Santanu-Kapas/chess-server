@@ -1,11 +1,10 @@
 const router = require("express").Router()
-const db = require("../database.js")
-router.post("/test", async (req, res) => {
+
+router.get("/test", async (req, res) => {
     try {
-        await db.query("insert into times (time) values (to_timestamp($1))", [Date.now() / 1000.0]);
-        return res.json({ hello: true })
+        return res.json({ success: true, message: 'App is working' })
     } catch (error) {
-        console.log(error)
+        return res.json({ success: false, error: error.message })
     }
 })
 

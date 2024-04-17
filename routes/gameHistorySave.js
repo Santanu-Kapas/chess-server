@@ -16,7 +16,7 @@ router.post("/game-history-save", async (req, res) => {
         }
     }
     catch (err) {
-        res.json({ success: false, error: err });
+        res.json({ success: false, error: err.message });
     }
 });
 

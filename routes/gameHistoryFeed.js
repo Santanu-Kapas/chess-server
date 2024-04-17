@@ -63,7 +63,7 @@ router.get("/game-history-feed", async (req, res) => {
             res.json({ success: false, error: "Not Authenticated yet." });
         }
     } catch (err) {
-        res.json({ success: false, error: err.message || "An error occurred." });
+        res.json({ success: false, error: err.message });
     }
 });
 

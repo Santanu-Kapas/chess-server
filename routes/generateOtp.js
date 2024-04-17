@@ -63,7 +63,7 @@ router.post("/generate-otp", async (req, res) => {
         }
     } catch (error) {
         console.error(error)
-        res.json({ success: false, error })
+        res.json({ success: false, error: error.message })
     }
 });
 
