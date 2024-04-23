@@ -5,7 +5,7 @@ const router = express.Router();
 const db = require("../database.js");
 const bcrypt = require("bcrypt");
 let success = false;
-let error;
+let error="";
 router.get("/login/status", (req, res) => {
   res.json({ success, error })
 });

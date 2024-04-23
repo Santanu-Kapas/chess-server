@@ -44,9 +44,6 @@ router.post("/register", async (req, res) => {
           req.login(user, (err) => {
             if (err) res.json({ success: false, error: "Server error" });
             else {
-              req.io.emit('logIn', {
-                message: "log in successfully"
-              })
               res.json({ success: true, error: "nothing" });
             }
           });

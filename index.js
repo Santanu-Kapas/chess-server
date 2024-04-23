@@ -19,6 +19,7 @@ app.use(
     secret: process.env.JWT_SECRET,
     resave: false,
     saveUninitialized: false,
+    store:false,
     cookie: {
       httpOnly: true,
       secure: false,
@@ -32,10 +33,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use((req, res, next) => {
-  req.io = io;
-  return next();
-});
 
 const server = createServer(app);
 const io = initializeSocket(server);
