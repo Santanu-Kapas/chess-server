@@ -33,6 +33,8 @@ app.use(
       rolling: true,
       proxy: true,
       domain: '.onrender.com',
+      sameSite:'none',
+      priority:'high'
     }
   })
 );
