@@ -32,7 +32,7 @@ app.use(
       maxAge: 24 * 60 * 60 * 1000 * 5, // 5 days
       rolling: true,
       domain: '.onrender.com',
-      sameSite: 'none'
+      sameSite: 'lax'
     }
   })
 );
