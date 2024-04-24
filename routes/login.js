@@ -61,6 +61,6 @@ passport.serializeUser((user, cb) => {
   cb(null, user);
 });
 passport.deserializeUser((user, cb) => {
-  cb(null, true);
+  cb(null, user);
 });
 module.exports = router;
