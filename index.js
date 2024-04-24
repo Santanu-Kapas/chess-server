@@ -42,7 +42,7 @@ const io = initializeSocket(server);
 app.use(express.static(path.join(__dirname, 'chess-client/build')));
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'chess-client/build', 'index.html'));
+  res.sendFile(path.join(__dirname, './chess-client/build', 'index.html'));
 });
 
 app.use("/api", require("./routes/login.js"));
