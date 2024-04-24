@@ -10,18 +10,18 @@ router.post("/register", async (req, res) => {
   const username = req.body.username;
   const email = req.body.email;
   const password = req.body.password;
-  const otp = req.body.otp;
-  const token = req.body.token
+  // const otp = req.body.otp;
+  // const token = req.body.token
 
   try {
-    const decoded = await jwt.verify(token, otp);
-    const data = decoded.data;
-    const secretLen = jwtSecret.length;
-    const retrievedUsername = data.slice(secretLen);
+    // const decoded = await jwt.verify(token, otp);
+    // const data = decoded.data;
+    // const secretLen = jwtSecret.length;
+    // const retrievedUsername = data.slice(secretLen);
 
-    if (retrievedUsername !== username) {
-      return res.json({ success: false, error: "You're not authorised" });
-    }
+    // if (retrievedUsername !== username) {
+    //   return res.json({ success: false, error: "You're not authorised" });
+    // }
 
     const checkResult = await db.query("SELECT * FROM users WHERE email = $1", [
       email,
