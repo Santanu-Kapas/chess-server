@@ -13,7 +13,13 @@ db.connect();
 const port = process.env.PORT_NUMBER;
 const host = process.env.FRONTEND_HOST;
 const app = express();
-
+app.set('trust proxy',1);
+app.all('*', function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", req.headers.origin); // also  tried "*" here
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
 app.use(
   session({
     secret: process.env.JWT_SECRET,
@@ -22,9 +28,11 @@ app.use(
     store:false,
     cookie: {
       httpOnly: true,
-      secure: false,
-      maxAge: 24 * 60 * 60 * 1000,
-      rolling: true
+      secure: true,
+      maxAge: 24 * 60 * 60 * 1000 * 5,
+      rolling: true,
+      proxy: true,
+      domain: '.onrender.com',
     }
   })
 );
