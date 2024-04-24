@@ -5,6 +5,7 @@ const passport = require("passport");
 const session = require("express-session");
 const cors = require("cors");
 const { createServer } = require("http");
+const path = require("path");
 const initializeSocket = require('./socket/socketManager.js');
 require('dotenv').config();
 
@@ -13,13 +14,7 @@ db.connect();
 const port = process.env.PORT_NUMBER;
 const host = process.env.FRONTEND_HOST;
 const app = express();
-app.set('trust proxy',1);
-app.all('*', function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", req.headers.origin); // also  tried "*" here
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-  next();
-});
+
 app.use(
   session({
     secret: process.env.JWT_SECRET,
@@ -30,14 +25,12 @@ app.use(
       httpOnly: true,
       secure: true,
       maxAge: 24 * 60 * 60 * 1000 * 5, // 5 days
-      rolling: true,
-      domain: '.onrender.com',
-      sameSite: 'lax'
+      rolling: true
     }
   })
 );
 
-app.use(cors({ origin: host, credentials: true }));
+app.use(cors({ origin: true, credentials: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
@@ -45,6 +38,12 @@ app.use(passport.session());
 
 const server = createServer(app);
 const io = initializeSocket(server);
+
+app.use(express.static(path.join(__dirname, 'chess-client/build')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'chess-client/build', 'index.html'));
+});
 
 app.use("/api", require("./routes/login.js"));
 app.use("/api", require("./routes/register.js"));
