@@ -25,19 +25,18 @@ app.use(
     secret: process.env.JWT_SECRET,
     resave: false,
     saveUninitialized: false,
-    store:false,
+    store: false,
     cookie: {
       httpOnly: true,
       secure: true,
-      maxAge: 24 * 60 * 60 * 1000 * 5,
+      maxAge: 24 * 60 * 60 * 1000 * 5, // 5 days
       rolling: true,
-      proxy: true,
       domain: '.onrender.com',
-      sameSite:'none',
-      priority:'high'
+      sameSite: 'none'
     }
   })
 );
+
 app.use(cors({ origin: host, credentials: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
