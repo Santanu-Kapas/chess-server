@@ -32,8 +32,8 @@ app.use(
       secure: true,
       maxAge: 24 * 60 * 60 * 1000 * 5, // 5 days
       rolling: true,
-      domain: 'chess-server-tt0x.onrender.com',
-      sameSite: 'lax'
+      // domain: 'chesshub.top',
+      sameSite: 'none'
     }
   })
 );
