@@ -138,7 +138,7 @@ function initializeSocket(server) {
 
     socket.on("search-user", async (data) => {
       try {
-        const userList = await db.query("select id,username,profile_photo from users where username like $1 || '%';", [data.query]);
+        const userList = await db.query("select id,username,profile_photo from users where lower(username) like $1 || '%';", [data.query.toLowerCase()]);
         io.to(socket.id).emit("search-user-result", { result: userList.rows })
       }
       catch (err) {
